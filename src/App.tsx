@@ -3,14 +3,13 @@ import { CheckboxControls } from './components/CheckboxControls';
 import { ComparisonGraph } from './components/ComparisonGraph';
 import {
   LIVE365_PRICE,
-  RADIO_CO_BASE_STARTING_PRICE,
+  ZENO_FM_BASE_STARTING_PRICE,
   EXPENSE_OPTIONS,
 } from './data/calculatorData';
 
 export default function App() {
-  // Default selected expenses: users can toggle any of them, including Base Audio Hosting
+  // Default selected expenses: all required expenses for Zeno.fm
   const [selectedIds, setSelectedIds] = useState<string[]>([
-    'base-hosting',
     'music-licensing',
     'royalty-reporting',
   ]);
@@ -66,7 +65,7 @@ export default function App() {
           <div className="lg:col-span-7 flex">
             <ComparisonGraph
               live365Price={LIVE365_PRICE}
-              radioCoBasePrice={RADIO_CO_BASE_STARTING_PRICE}
+              zenoFmBasePrice={ZENO_FM_BASE_STARTING_PRICE}
               options={EXPENSE_OPTIONS}
               selectedIds={selectedIds}
             />
