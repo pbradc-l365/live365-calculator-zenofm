@@ -1,191 +1,112 @@
 import React from 'react';
 import { ExpenseOption } from '../types';
-import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, Sparkles, AlertCircle } from 'lucide-react';
+import { Check, CheckSquare, Square } from 'lucide-react';
 
-interface ComparisonGraphProps {
-  live365Price: number;
-  zenoFmBasePrice: number;
+interface CheckboxControlsProps {
   options: ExpenseOption[];
   selectedIds: string[];
+  onToggle: (id: string) => void;
+  onSelectAll: () => void;
+  onDeselectAll: () => void;
 }
 
-export const ComparisonGraph: React.FC<ComparisonGraphProps> = ({
-  live365Price,
-  zenoFmBasePrice,
+export const CheckboxControls: React.FC<CheckboxControlsProps> = ({
   options,
   selectedIds,
+  onToggle,
+  onSelectAll,
+  onDeselectAll,
 }) => {
-  // Active selected options
-  const activeOptions = options.filter((opt) => selectedIds.includes(opt.id));
-  
-  // Calculate total Zeno.fm cost (Base $35 + checked add-on expenses)
-  const additionalCost = activeOptions.reduce((sum, opt) => sum + opt.cost, 0);
-  const zenoFmTotal = zenoFmBasePrice + additionalCost;
-
-  const monthlySavings = Math.max(0, zenoFmTotal - live365Price);
-  const annualSavings = monthlySavings * 12;
-
-  // Max value for scale calculation
-  const maxScale = Math.max(500, zenoFmTotal * 1.15, live365Price * 1.5);
-  const maxHeightPx = 360;
-
   return (
     <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl text-slate-100 flex flex-col justify-between">
-      {/* Graph Header with Savings Badge */}
       <div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
           <div>
-            <h2 className="text-lg sm:text-xl font-black text-white">
-              Monthly Cost Comparison
+            <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+              Broadcaster Expenses
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Live365 flat rate vs. Zeno.fm stacked expenses
+              Select the expenses broadcasters must pay to run a station:
             </p>
           </div>
-
-          {/* Dynamic Savings Display */}
-          {monthlySavings > 0 && (
-            <motion.div
-              key={monthlySavings}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
-            >
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <div className="text-left">
-                <span className="text-[10px] uppercase font-bold tracking-wider block leading-none text-emerald-400/80">
-                  Live365 Savings
-                </span>
-                <span className="font-mono font-black text-sm text-emerald-300">
-                  Save ${monthlySavings.toFixed(2)}/mo
-                </span>
-              </div>
-            </motion.div>
-          )}
         </div>
 
-        {/* 2-Bar Comparison Chart Area */}
-        <div className="relative pt-8 pb-4 flex items-end justify-center gap-8 sm:gap-16 min-h-[420px]">
-          
-          {/* Subtle Grid line behind bars */}
-          <div className="absolute inset-x-0 bottom-12 border-b border-slate-800 pointer-events-none" />
+        {/* Quick action buttons */}
+        <div className="flex items-center gap-2 my-4">
+          <button
+            type="button"
+            id="select-all-btn"
+            onClick={onSelectAll}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5"
+          >
+            <CheckSquare className="w-3.5 h-3.5 text-[#F05023]" />
+            <span>Select All</span>
+          </button>
+          <button
+            type="button"
+            id="deselect-all-btn"
+            onClick={onDeselectAll}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5"
+          >
+            <Square className="w-3.5 h-3.5 text-slate-400" />
+            <span>Deselect All</span>
+          </button>
+        </div>
 
-          {/* Bar 1: Live365 (All-Inclusive $65/mo) */}
-          <div className="w-36 sm:w-44 flex flex-col items-center">
-            {/* Price badge above bar */}
-            <div className="mb-2 text-center">
-              <span className="inline-block px-3 py-1 rounded-xl bg-[#F05023] text-white font-mono font-black text-base shadow-lg shadow-[#F05023]/30">
-                ${live365Price.toFixed(2)}
-                <span className="text-[11px] font-normal text-orange-200">/mo</span>
-              </span>
-              <div className="text-[11px] font-bold text-[#F05023] mt-1 flex items-center justify-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>All-Inclusive</span>
-              </div>
-            </div>
+        {/* Selectable Checkboxes List */}
+        <div className="space-y-3">
+          {options.map((option) => {
+            const isChecked = selectedIds.includes(option.id);
 
-            {/* Solid Bar */}
-            <div
-              className="w-full rounded-t-xl bg-[#F05023] shadow-lg shadow-[#F05023]/20 flex flex-col justify-between p-3 text-white transition-all duration-300 relative overflow-hidden"
-              style={{
-                height: `${Math.max(120, (live365Price / maxScale) * maxHeightPx)}px`,
-              }}
-            >
-              <div className="text-center font-bold text-xs uppercase tracking-wider text-orange-100">
-                Live365
-              </div>
-              <div className="text-[10px] text-center font-medium bg-black/20 rounded py-1 px-1">
-                Hosting + Licensing + Reporting Included
-              </div>
-            </div>
-
-            {/* Label below bar */}
-            <div className="mt-3 text-center">
-              <span className="font-bold text-sm text-white block">Live365</span>
-              <span className="text-[11px] text-slate-400 block">Flat Rate Plan</span>
-            </div>
-          </div>
-
-          {/* Bar 2: Zeno.fm (Interactive Stacked Bar starting at $35/mo + selectable options) */}
-          <div className="w-36 sm:w-44 flex flex-col items-center">
-            {/* Price badge above bar */}
-            <div className="mb-2 text-center">
-              <motion.span
-                key={zenoFmTotal}
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                className="inline-block px-3 py-1 rounded-xl bg-slate-800 border border-slate-700 text-white font-mono font-black text-base shadow-md"
-              >
-                ${zenoFmTotal.toFixed(2)}
-                <span className="text-[11px] font-normal text-slate-400">/mo</span>
-              </motion.span>
-              <div className="text-[11px] font-bold text-rose-400 mt-1 flex items-center justify-center gap-1">
-                <AlertCircle className="w-3.5 h-3.5" />
-                <span>Total Stacked Cost</span>
-              </div>
-            </div>
-
-            {/* Stacked Bar Container */}
-            <div
-              className="w-full rounded-t-xl bg-slate-950 border border-slate-800 flex flex-col-reverse shadow-xl transition-all duration-300 relative overflow-hidden"
-              style={{
-                height: `${Math.max(120, (zenoFmTotal / maxScale) * maxHeightPx)}px`,
-              }}
-            >
-              {/* 1. Base Starting Zeno.fm Tier ($35/mo) */}
+            return (
               <div
-                className="w-full bg-slate-800 text-white flex flex-col justify-center px-2 py-1 border-b border-slate-700 text-center shrink-0 transition-all"
-                style={{
-                  height: `${(zenoFmBasePrice / maxScale) * maxHeightPx}px`,
-                }}
+                key={option.id}
+                id={`expense-card-${option.id}`}
+                onClick={() => onToggle(option.id)}
+                className={`p-4 rounded-xl border transition-all cursor-pointer select-none ${
+                  isChecked
+                    ? 'bg-slate-950/80 border-slate-700 shadow-md ring-1 ring-slate-600/50'
+                    : 'bg-slate-950/30 border-slate-800/80 hover:border-slate-700 opacity-75 hover:opacity-100'
+                }`}
               >
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">
-                  Zeno.fm Base
-                </span>
-                <span className="font-mono font-bold text-xs text-white">
-                  ${zenoFmBasePrice.toFixed(2)}
-                </span>
+                <div className="flex items-start gap-3">
+                  {/* Custom Checkbox */}
+                  <div
+                    className={`w-5 h-5 rounded mt-0.5 flex items-center justify-center transition-colors shrink-0 border ${
+                      isChecked
+                        ? 'bg-[#F05023] border-[#F05023] text-white'
+                        : 'border-slate-600 bg-slate-900 text-transparent'
+                    }`}
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+
+                  {/* Expense Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: option.color }}
+                        />
+                        <span className="font-bold text-sm text-white">
+                          {option.name}
+                        </span>
+                      </div>
+                      <span className="font-mono font-bold text-sm text-white shrink-0">
+                        ${option.cost.toFixed(2)}
+                        <span className="text-[11px] font-normal text-slate-400">/mo</span>
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      {option.description}
+                    </p>
+                  </div>
+                </div>
               </div>
-
-              {/* 2. Selectable Animated Colored Segments */}
-              <AnimatePresence>
-                {activeOptions.map((opt) => {
-                  const segmentHeightPx = (opt.cost / maxScale) * maxHeightPx;
-
-                  return (
-                    <motion.div
-                      key={opt.id}
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: segmentHeightPx, opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.35, ease: 'easeInOut' }}
-                      className="w-full text-white flex flex-col justify-center px-2 py-1 border-b border-black/20 text-center overflow-hidden shrink-0"
-                      style={{
-                        backgroundColor: opt.color,
-                      }}
-                    >
-                      <span className="text-[10px] font-bold uppercase tracking-wider truncate text-white/90 drop-shadow-sm">
-                        {opt.name}
-                      </span>
-                      <span className="font-mono font-black text-xs text-white drop-shadow-sm">
-                        +${opt.cost.toFixed(2)}
-                      </span>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-
-            {/* Label below bar */}
-            <div className="mt-3 text-center">
-              <span className="font-bold text-sm text-white block">Zeno.fm Stack</span>
-              <span className="text-[11px] text-slate-400 block">
-                {activeOptions.length} baseline required expense{activeOptions.length === 1 ? '' : 's'} included
-              </span>
-            </div>
-          </div>
-
+            );
+          })}
         </div>
       </div>
     </div>
