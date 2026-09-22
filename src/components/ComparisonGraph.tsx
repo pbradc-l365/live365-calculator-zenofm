@@ -5,30 +5,29 @@ import { CheckCircle2, Sparkles, AlertCircle } from 'lucide-react';
 
 interface ComparisonGraphProps {
   live365Price: number;
-  radioCoBasePrice: number;
+  zenoFmBasePrice: number;
   options: ExpenseOption[];
   selectedIds: string[];
 }
 
 export const ComparisonGraph: React.FC<ComparisonGraphProps> = ({
   live365Price,
-  radioCoBasePrice,
+  zenoFmBasePrice,
   options,
   selectedIds,
 }) => {
   // Active selected options
   const activeOptions = options.filter((opt) => selectedIds.includes(opt.id));
   
-  // Calculate total Radio.co cost (Base $59 + checked add-on expenses)
-  // If base-hosting is in options, we calculate the sum of checked options + radioCoBasePrice
+  // Calculate total Zeno.fm cost (Base $35 + checked add-on expenses)
   const additionalCost = activeOptions.reduce((sum, opt) => sum + opt.cost, 0);
-  const radioCoTotal = radioCoBasePrice + additionalCost;
+  const zenoFmTotal = zenoFmBasePrice + additionalCost;
 
-  const monthlySavings = Math.max(0, radioCoTotal - live365Price);
+  const monthlySavings = Math.max(0, zenoFmTotal - live365Price);
   const annualSavings = monthlySavings * 12;
 
   // Max value for scale calculation
-  const maxScale = Math.max(500, radioCoTotal * 1.15, live365Price * 1.5);
+  const maxScale = Math.max(500, zenoFmTotal * 1.15, live365Price * 1.5);
   const maxHeightPx = 360;
 
   return (
@@ -108,17 +107,17 @@ export const ComparisonGraph: React.FC<ComparisonGraphProps> = ({
             </div>
           </div>
 
-          {/* Bar 2: Radio.co (Interactive Stacked Bar starting at $59/mo + selectable options) */}
+          {/* Bar 2: Zeno.fm (Interactive Stacked Bar starting at $35/mo + selectable options) */}
           <div className="w-36 sm:w-44 flex flex-col items-center">
             {/* Price badge above bar */}
             <div className="mb-2 text-center">
               <motion.span
-                key={radioCoTotal}
+                key={zenoFmTotal}
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
                 className="inline-block px-3 py-1 rounded-xl bg-slate-800 border border-slate-700 text-white font-mono font-black text-base shadow-md"
               >
-                ${radioCoTotal.toFixed(2)}
+                ${zenoFmTotal.toFixed(2)}
                 <span className="text-[11px] font-normal text-slate-400">/mo</span>
               </motion.span>
               <div className="text-[11px] font-bold text-rose-400 mt-1 flex items-center justify-center gap-1">
@@ -131,21 +130,21 @@ export const ComparisonGraph: React.FC<ComparisonGraphProps> = ({
             <div
               className="w-full rounded-t-xl bg-slate-950 border border-slate-800 flex flex-col-reverse shadow-xl transition-all duration-300 relative overflow-hidden"
               style={{
-                height: `${Math.max(120, (radioCoTotal / maxScale) * maxHeightPx)}px`,
+                height: `${Math.max(120, (zenoFmTotal / maxScale) * maxHeightPx)}px`,
               }}
             >
-              {/* 1. Base Starting Radio.co Tier ($59/mo) */}
+              {/* 1. Base Starting Zeno.fm Tier ($35/mo) */}
               <div
                 className="w-full bg-slate-800 text-white flex flex-col justify-center px-2 py-1 border-b border-slate-700 text-center shrink-0 transition-all"
                 style={{
-                  height: `${(radioCoBasePrice / maxScale) * maxHeightPx}px`,
+                  height: `${(zenoFmBasePrice / maxScale) * maxHeightPx}px`,
                 }}
               >
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">
                   Zeno.fm Base
                 </span>
                 <span className="font-mono font-bold text-xs text-white">
-                  ${radioCoBasePrice.toFixed(2)}
+                  ${zenoFmBasePrice.toFixed(2)}
                 </span>
               </div>
 
