@@ -2,21 +2,9 @@ import { ExpenseOption } from '../types';
 
 export const LIVE365_PRICE = 65.0; // $65/month all-inclusive
 
-export const RADIO_CO_BASE_STARTING_PRICE = 59.0; // Radio.co baseline starting host price
+export const ZENO_FM_BASE_STARTING_PRICE = 35.0; // Zeno.fm baseline starting host price ($35/mo)
 
 export const EXPENSE_OPTIONS: ExpenseOption[] = [
-  {
-    id: 'base-hosting',
-    name: 'Audio Hosting',
-    category: 'hosting',
-    cost: 35.0,
-    description: 'Basic streaming audio server bandwidth & track storage',
-    color: '#0ea5e9', // Sky Blue
-    badgeBg: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
-    textColor: 'text-sky-400',
-    borderColor: 'border-sky-500',
-    details: 'Covers raw audio stream relay only. Does not include any music copyright licensing.',
-  },
   {
     id: 'music-licensing',
     name: 'Blanket Music Licensing',
