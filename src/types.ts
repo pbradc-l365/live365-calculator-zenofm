@@ -13,5 +13,5 @@ export interface ExpenseOption {
 
 export interface ComparisonState {
   live365Monthly: number;
-  radioCoBase: number;
+  zenoFmBase: number;
 }
